@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight search</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav class="nav shadow-lightblue">
+        <b>Flight search</b>
+    </nav>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="card-0pd add-container shadow-lightblue">
+                <div style="display: flex; align-items: center;">
+                    <h3 id="add-title">Add flight</h3>
+                    <h3 id="edit-title">Edit flight</h3> <span style="margin-left: auto;" class="close">&times;</span>
+                </div>
+
+                <input id="origin-input" class="input" type="text" placeholder="Origin">
+                <input id="destination-input" class="input" type="text" placeholder="Destination">
+
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                    <p style="font-style: italic;">Departure date</p>
+                    <div>
+                        <input id="day-input" class="input" type="text" placeholder="DAY">
+                        <input id="month-input" class="input" type="text" placeholder="MONTH">
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                    <p style="font-style: italic;">Departure</p>
+                    <div class="time-selector">
+                        <input id="departure-input-1" class="input" type="text" placeholder="00">
+                        <b>:</b>
+                        <input id="departure-input-2" class="input" type="text" placeholder="00">
+
+                        <select id="departure-ampm">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                    <p style="font-style: italic;">Arrival</p>
+                    <div class="time-selector">
+                        <input id="arrival-input-1" class="input" type="text" placeholder="00">
+                        <b>:</b>
+                        <input id="arrival-input-2" class="input" type="text" placeholder="00">
+
+                        <select id="arrival-ampm">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <input id="airline-input" class="input" type="text" placeholder="Airline">
+                <input id="price-input" class="input" type="text" placeholder="Price">
+
+                <button class="btn-sm" id="add-button" onclick="addFlight()">Add</button>
+                <button class="btn-sm" id="edit-button" onclick="editFlight()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <button id="openModal" class="btn-md"
+            style="margin-bottom: 10px; align-self: flex-start; margin-left: 15vw;">Add flight</button>
+        <div class="card-0pd filter-container shadow-lightblue">
+            <input id="origin-input-filter" class="input" type="text" placeholder="origin">
+            <input id="destination-input-filter" class="input" type="text" placeholder="destination">
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+            <input id="day-input-filter" class="input input-sm" type="text" placeholder="DAY">
+            <input id="month-input-filter" class="input input-sm" type="text" placeholder="MONTH">
+            <button class="btn-sm" onclick="getFlights()">Search</button>
+        </div>
+
+
+        <div class="list-container"></div>
+
+    </div>
+
+    <script>
+        window.originInput = '';
+        window.destinationInput = '';
+        window.dayInput = '';
+        window.monthInput = '';
+        window.departureInput1 = '';
+        window.departureInput2 = '';
+        window.departureAmpm = '';
+        window.arrivalInput1 = '';
+        window.arrivalInput2 = '';
+        window.arrivalAmpm = '';
+        window.airlineInput = '';
+        window.priceInput = '';
+
+        function setInputListener(inputId, variableName) {
+            const inputElement = document.querySelector(`#${inputId}`);
+            window[variableName] = inputElement.value;
+            inputElement.addEventListener('input', () => {
+                window[variableName] = inputElement.value;
+            });
+        }
+
+        setInputListener('origin-input', 'originInput');
+        setInputListener('destination-input', 'destinationInput');
+        setInputListener('day-input', 'dayInput');
+        setInputListener('month-input', 'monthInput');
+        setInputListener('departure-input-1', 'departureInput1');
+        setInputListener('departure-input-2', 'departureInput2');
+        setInputListener('departure-ampm', 'departureAmpm');
+        setInputListener('arrival-input-1', 'arrivalInput1');
+        setInputListener('arrival-input-2', 'arrivalInput2');
+        setInputListener('arrival-ampm', 'arrivalAmpm');
+        setInputListener('airline-input', 'airlineInput');
+        setInputListener('price-input', 'priceInput');
+
+
+        let addTitle = document.getElementById('add-title');
+        let editTitle = document.getElementById('edit-title');
+        let addButton = document.getElementById('add-button');
+        let editButton = document.getElementById('edit-button');
+
+        let edit_flight_id;
+
+        let container = document.querySelector('.list-container');
+
+        let originInputFilter = document.getElementById("origin-input-filter");
+        let destinationInputFilter = document.getElementById("destination-input-filter");
+        let dayInputFilter = document.getElementById("day-input-filter");
+        let monthInputFilter = document.getElementById("month-input-filter");
+
+        let baseUrl = 'http://127.0.0.1:8080';
+
+        let departure_date = "";
+
+        if (dayInputFilter.value && monthInputFilter.value) {
+            departure_date = dayInputFilter.value + "_" + monthInputFilter.value;
+        }
+
+
+        const month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+        async function getFlights() {
+            container.innerHTML = '';
+
+            await fetch(baseUrl + `/flights?origin=${originInputFilter.value}&destination=${destinationInputFilter.value}&departure_date=${departure_date}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            }).then(res => res.json()).then(data => {
+                let flights = data;
+
+
+                flights.forEach(flight => {
+                    date = flight.departure_date.split(" ");
+
+                    let div = document.createElement("div");
+                    div.innerHTML = `
+                        <div class="card flight">
+                            <div class="section-1">
+                                <div class="bold">${month[date[1] - 1]} ${date[0]}</div>
+                                <div>${flight.airline}</div>
+                            </div>
+                            <div class="section-2">
+                                <div class="bold">${flight.departure_time} - ${flight.arrival_time}</div>
+                                <div>${flight.origin} - ${flight.destination}</div>
+                            </div>
+                            <div class="price bold">
+                                €${flight.price}
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 5px;">
+                                <button class="btn-sm" onclick=removeFlight(${flight.id}) style="background-color: #cc3f4d;">Remove</button>
+                                <button class="btn-sm" onclick="editFlightModal('${flight.id}', '${flight.departure_time}', '${flight.arrival_time}', '${flight.origin}', '${flight.destination}', '${flight.departure_date}', '${flight.airline}', '${flight.price}')"> Edit </button>
+                            </div>
+                        </div>
+                    `
+
+                    container.appendChild(div);
+                });
+            });
+        }
+
+
+
+        function editFlightModal(flight_id, d_time, a_time, origin, destination, d_date, airline, price) {
+
+            edit_flight_id = flight_id;
+
+            modal.style.display = 'block';
+
+            let depTime = d_time.split(/:|(?<=\d)(?=A|P)/);
+            let arrTime = a_time.split(/:|(?<=\d)(?=A|P)/);
+
+            document.querySelector('#origin-input').value = origin;
+            document.querySelector('#destination-input').value = destination;
+            document.querySelector('#day-input').value = d_date.split(" ")[0];
+            document.querySelector('#month-input').value = d_date.split(" ")[1];
+            document.querySelector('#departure-input-1').value = depTime[0];
+            document.querySelector('#departure-input-2').value = depTime[1];
+            document.querySelector('#departure-ampm').value = depTime[2];
+            document.querySelector('#arrival-input-1').value = arrTime[0];
+            document.querySelector('#arrival-input-2').value = arrTime[1];
+            document.querySelector('#arrival-ampm').value = arrTime[2];
+            document.querySelector('#airline-input').value = airline;
+            document.querySelector('#price-input').value = price;
+
+            editButton.style.display = 'block';
+            editTitle.style.display = 'block';
+            addButton.style.display = 'none';
+            addTitle.style.display = 'none';
+
+        }
+
+
+
+        async function editFlight() {
+
+            let json = {
+                "flight_id": edit_flight_id,
+                "airline": airlineInput,
+                "origin": originInput,
+                "destination": destinationInput,
+                "departure_date": dayInput + " " + monthInput,
+                "departure_time": departureInput1 + ":" + departureInput2 + departureAmpm,
+                "arrival_time": arrivalInput1 + ":" + arrivalInput2 + arrivalAmpm,
+                "price": priceInput,
+            };
+
+            await fetch(baseUrl + `/flights`, {
+                method: 'PATCH',
+                body: JSON.stringify(json),
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            }).then(res => res.json()).then(data => {
+                container.innerHTML = '';
+                getFlights();
+            });
+        }
+
+        async function addFlight() {
+
+            let json = {
+                "airline": airlineInput,
+                "origin": originInput,
+                "destination": destinationInput,
+                "departure_date": dayInput + " " + monthInput,
+                "departure_time": departureInput1 + ":" + departureInput2 + departureAmpm,
+                "arrival_time": arrivalInput1 + ":" + arrivalInput2 + arrivalAmpm,
+                "price": priceInput,
+            };
+
+            await fetch(baseUrl + `/flights`, {
+                method: 'POST',
+                body: JSON.stringify(json),
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            }).then(res => res.json()).then(data => {
+                container.innerHTML = '';
+                getFlights();
+            });
+        }
+
+
+        async function removeFlight(flight_id) {
+
+            let json = { "flight_id": flight_id };
+
+            await fetch(baseUrl + `/flights`, {
+                method: 'DELETE',
+                body: JSON.stringify(json),
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            }).then(res => res.json()).then(data => {
+                container.innerHTML = '';
+                getFlights();
+            });
+        }
+
+        // modal
+        const modal = document.getElementById('modal');
+        const openModalButton = document.getElementById('openModal');
+        const closeButton = document.getElementsByClassName('close')[0];
+
+        openModalButton.addEventListener('click', function () {
+
+            document.querySelector('#origin-input').value = '';
+            document.querySelector('#destination-input').value = '';
+            document.querySelector('#day-input').value = '';
+            document.querySelector('#month-input').value = '';
+            document.querySelector('#departure-input-1').value = '';
+            document.querySelector('#departure-input-2').value = '';
+            document.querySelector('#departure-ampm').value = '';
+            document.querySelector('#arrival-input-1').value = '';
+            document.querySelector('#arrival-input-2').value = '';
+            document.querySelector('#arrival-ampm').value = '';
+            document.querySelector('#airline-input').value = '';
+            document.querySelector('#price-input').value = '';
+            modal.style.display = 'block';
+            addButton.style.display = 'block';
+            addTitle.style.display = 'block';
+            editButton.style.display = 'none';
+            editTitle.style.display = 'none';
+
+        });
+
+        closeButton.addEventListener('click', function () {
+            modal.style.display = 'none';
+
+        });
+
+        getFlights();
+    </script>
+
+</body>
+
+</html>

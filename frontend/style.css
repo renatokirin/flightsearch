@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    color: #202124;
+    font-family: 'Roboto', sans-serif;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.nav {
+    padding: 0px 10px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav b {
+    padding: 10px 5px;
+    font-style: italic;
+    color: #2d6b69;
+    font-weight: 500;
+    font-size: 22px;
+
+}
+
+.nav .btn-sm {
+    color: white;
+    margin-left: auto;
+}
+
+
+.time-selector {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.time-selector input {
+    text-align: center;
+    width: 18px;
+}
+
+
+
+.main-container {
+    margin-top: 50px;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.filter-container {
+    margin-bottom: 20px;
+    display: flex;
+    width: 1180px;
+    height: 50px;
+    padding: 9px 5px;
+    gap: 5px;
+}
+
+.add-container {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+    padding: 15px 35px;
+    display: flex;
+    flex-direction: column;
+    width: 380px;
+    gap: 25px;
+}
+
+
+.filter-container input {
+    font-size: 15px;
+}
+
+.filter-container .input-sm {
+    width: 120px;
+}
+
+.filter-container button {
+    margin-left: auto;
+    padding: 5px 35px;
+}
+
+.list-container {
+    display: flex;
+    flex-direction: column;
+    width: 1200px;
+}
+
+.flight {
+    display: grid;
+    grid-template-columns: 10fr 10fr 1fr 2fr;
+    align-items: center;
+}
+
+.section-1,
+.section-2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.price {
+    margin-right: 45px;
+}
+
+.input,
+select {
+    border: 1px solid gainsboro;
+    border-radius: 5px;
+    padding: 7px;
+}
+
+.btn-sm {
+    cursor: pointer;
+    font-size: 15px;
+    padding: 5px 15px;
+    border: none;
+    color: white;
+    background-color: #8ebcbb;
+    border-radius: 5px;
+}
+
+.btn-sm:hover {
+    background-color: #b1cccc;
+}
+
+.btn-md {
+    cursor: pointer;
+    font-size: 25px;
+    padding: 5px 15px;
+    border: none;
+    color: white;
+    background-color: #8ebcbb;
+    border-radius: 7px;
+}
+
+.btn-md:hover {
+    background-color: #b1cccc;
+}
+
+.btn-lg {
+    cursor: pointer;
+    font-size: 35px;
+    padding: 5px 15px;
+    border: none;
+    color: white;
+    background-color: #8ebcbb;
+    border-radius: 9px;
+}
+
+.btn-lg:hover {
+    background-color: #b1cccc;
+}
+
+.card {
+    background-color: white;
+    border: 1px solid gainsboro;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 4px;
+}
+
+.card-0pd {
+    background-color: white;
+    border: 1px solid gainsboro;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-lightblue {
+    box-shadow: 0px 3px 4px #8ebcbb7f;
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
