@@ -1,5 +1,6 @@
 # FlightSearch
 FlightSearch is a conceptual flight search application, used to add, edit, delete and filter flights.
+![alt text](https://raw.githubusercontent.com/renatokirin/flightsearch/main/screenshot.png)
 
 ## Features
 * Add a new flight
