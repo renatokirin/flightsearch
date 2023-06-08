@@ -139,11 +139,7 @@
 
         let baseUrl = 'http://127.0.0.1:8080';
 
-        let departure_date = "";
 
-        if (dayInputFilter.value && monthInputFilter.value) {
-            departure_date = dayInputFilter.value + "_" + monthInputFilter.value;
-        }
 
 
         const month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -151,6 +147,12 @@
 
         async function getFlights() {
             container.innerHTML = '';
+
+            let departure_date = "";
+
+            if (dayInputFilter.value && monthInputFilter.value) {
+                departure_date = dayInputFilter.value + "_" + monthInputFilter.value;
+            }
 
             await fetch(baseUrl + `/flights?origin=${originInputFilter.value}&destination=${destinationInputFilter.value}&departure_date=${departure_date}`, {
                 method: 'GET',
@@ -214,6 +216,19 @@
             document.querySelector('#arrival-ampm').value = arrTime[2];
             document.querySelector('#airline-input').value = airline;
             document.querySelector('#price-input').value = price;
+            
+            window.originInput = origin;
+            window.destinationInput = destination;
+            window.dayInput = d_date.split(" ")[0];
+            window.monthInput = d_date.split(" ")[1];
+            window.departureInput1 = depTime[0];
+            window.departureInput2 = depTime[1];
+            window.departureAmpm = depTime[2];
+            window.arrivalInput1 = arrTime[0];
+            window.arrivalInput2 = arrTime[1];
+            window.arrivalAmpm = arrTime[2];
+            window.airlineInput = airline;
+            window.priceInput = price;
 
             editButton.style.display = 'block';
             editTitle.style.display = 'block';
